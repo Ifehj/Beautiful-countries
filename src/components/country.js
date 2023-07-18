@@ -7,14 +7,16 @@ const Country = () => {
   const [country, setCountry] = useState([]);
   const { name } = useParams();
 
-  const fetchCountries = async () => {
+  const fetchCountryData = async () => {
     const response = await fetch(`https://restcountries.com/v3.1/name/${name}`);
-    const country = await response.json();
-    setCountry(country);
+    const countryData = await response.json();
+    setCountry(countryData);
   };
 
+  
+
   useEffect(() => {
-    fetchCountries();
+    fetchCountryData();
   }, [name]);
 
   return (
@@ -95,5 +97,4 @@ const Country = () => {
     </>
   );
 };
-
 export default Country;
