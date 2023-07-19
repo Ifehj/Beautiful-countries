@@ -10,16 +10,28 @@ const Country = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   const fetchCountryData = async () => {
-    const response = await fetch(`https://restcountries.com/v3.1/name/${name}`);
-    const countryData = await response.json();
-    setCountry(countryData[0]); // Fetch the first country object from the array
-    setIsLoading(false); // Set the loading state to false once the data is fetched
+    try {
+      const response = await fetch(`https://restcountries.com/v3.1/name/${name}`);
+      const countryData = await response.json();
+  
+      // Introduce a delay of 1.5 seconds before setting the country data and updating the loading state
+      const delayInMilliseconds = 1500;
+      setTimeout(() => {
+        setCountry(countryData[0]); // Fetch the first country object from the array
+        setIsLoading(false); // Set the loading state to false once the data is fetched
+      }, delayInMilliseconds);
+  
+    } catch (error) {
+      // Handle any errors that occurred during the fetch
+      console.error(error);
+      setIsLoading(false); // Set loading state to false even if there's an error
+    }
   };
 
   useEffect(() => {
     setTimeout(() => {
       fetchCountryData();
-    }, 2500);
+    }, 1500);
   }, [name]);
 
   const {
@@ -94,7 +106,15 @@ const Country = () => {
     );
   } else {
     return(
-<div style={{ textAlign: 'center', margin: '0 auto' }}><h1>Loading.....</h1></div>
+<div style={{
+  position: 'fixed',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  textAlign: 'center'
+}}>
+  <h1>Loading.....</h1>
+</div>
 
       )
   }
