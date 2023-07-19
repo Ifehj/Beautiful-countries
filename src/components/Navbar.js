@@ -1,37 +1,33 @@
-import React from "react";
+import React, { useState } from "react";
 import { BsSearch } from "react-icons/bs";
 import { SearchNavigation } from "./styles";
-import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 
-const Navbar = () => {
-  const [filtered, setFiltered] = useState([]);
+
+const Navbar = ({ region, onRegionChange }) => {
   const [searchInput, setSearchInput] = useState("");
 
-
-  const url = 'https://restcountries.com/v3.1/all'
-  const [country, setCountry] = useState([]);
-  const fetchCountryData = async () => {
-    const response = await fetch(`https://restcountries.com/v3.1/name/}`);
-    const countryData = await response.json();
-    setCountry(countryData);
+  const handleRegionChange = (event) => {
+    const selectedRegion = event.target.value;
+    onRegionChange(selectedRegion);
   };
-  useEffect(() => {
-    fetchCountryData();
-  }, []);
 
-  
-	const [countries, setCountries] = useState([]);
-	const CountryData = async () => {
-	  const response = await fetch(url);
-	  const countries = await response.json();
-	  setCountries(countries);
-	};
-  
-	useEffect(() => {
-	  CountryData();
-	}, []);
+  const handleInputChange = (e) => {
+    setSearchInput(e.target.value);
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (searchInput) {
+      // Navigate to the path `/:name` with the name of the country
+      window.location.href = `/${searchInput}`;
+    }
+  };
 
   const regions = [
+    {
+      name: "All",
+    },
     {
       name: "Europe",
     },
@@ -47,31 +43,12 @@ const Navbar = () => {
     {
       name: "Americas",
     },
-    {
-      name: "Antarctica",
-    },
   ];
-
-  const searchCountries = (searchValue) => {
-    setSearchInput(searchValue);
-
-    if (searchValue) {
-      const filteredCountries = countries.filter((country) =>
-        Object.values(country)
-          .join("")
-          .toLowerCase()
-          .includes(searchValue.toLowerCase())
-      );
-      setFiltered(filteredCountries);
-    } else {
-      setFiltered(countries);
-    }
-  };
 
   return (
     <SearchNavigation>
       <div className="search-container">
-        <form className="search-country">
+        <form className="search-country" onSubmit={handleSubmit}>
           <span>
             <BsSearch />
           </span>
@@ -80,11 +57,11 @@ const Navbar = () => {
             name="search"
             id="search"
             value={searchInput}
-            onChange={(e) => searchCountries(e.target.value)}
+            onChange={handleInputChange}
           />
         </form>
 
-        <select name="select" id="select" className="select">
+        <select name="select" id="select" className="select" onChange={handleRegionChange} value={region}>
           {regions.map((region, index) => (
             <option key={index} value={region.name}>
               {region.name}
@@ -92,6 +69,12 @@ const Navbar = () => {
           ))}
         </select>
       </div>
+      {searchInput && (
+        <Link to={`/${searchInput}`} style={{ display: "none" }}>
+          {/* This Link is hidden and will be triggered when the form is submitted */}
+          Search
+        </Link>
+      )}
     </SearchNavigation>
   );
 };
