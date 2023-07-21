@@ -6,24 +6,29 @@ import { BsArrowLeft } from "react-icons/bs";
 const Country = () => {
   const [country, setCountry] = useState({});
   const { name } = useParams();
-
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   const fetchCountryData = async () => {
     try {
       const response = await fetch(`https://restcountries.com/v3.1/name/${name}`);
       const countryData = await response.json();
-  
-      // Introduce a delay of 1.5 seconds before setting the country data and updating the loading state
-      const delayInMilliseconds = 1500;
-      setTimeout(() => {
-        setCountry(countryData[0]); // Fetch the first country object from the array
-        setIsLoading(false); // Set the loading state to false once the data is fetched
-      }, delayInMilliseconds);
-  
+
+      if (response.ok && countryData.length > 0) {
+        // Introduce a delay of 1.5 seconds before setting the country data and updating the loading state
+        const delayInMilliseconds = 1500;
+        setTimeout(() => {
+          setCountry(countryData[0]); // Fetch the first country object from the array
+          setIsLoading(false); // Set the loading state to false once the data is fetched
+        }, delayInMilliseconds);
+      } else {
+        // Set the error state if the fetch was unsuccessful or if the fetched data is empty
+        setError('Invalid country name');
+        setIsLoading(false); // Set loading state to false even if there's an error
+      }
     } catch (error) {
-      // Handle any errors that occurred during the fetch
-      console.error(error);
+      // Set the error state if an error occurred during the fetch
+      setError('Error fetching country data');
       setIsLoading(false); // Set loading state to false even if there's an error
     }
   };
@@ -51,7 +56,20 @@ const Country = () => {
   let currencyToArray = Object.values(currencies || {});
   let languageToArray = Object.values(languages || {});
 
-  if (!isLoading) {
+  if (error) {
+    return (
+      <div style={{
+        position: 'fixed',
+        top: '50%',
+        left: '50%',
+        transform: 'translate(-50%, -50%)',
+        textAlign: 'center'
+      }}>
+        <h1>{error}</h1>
+        <button onClick={() => window.history.back()}>Go Back</button>
+      </div>
+    );
+  } else if (!isLoading) {
     return (
       <CountryDetail>
         <Link to="/" className="button">
@@ -105,18 +123,17 @@ const Country = () => {
       </CountryDetail>
     );
   } else {
-    return(
-<div style={{
-  position: 'fixed',
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)',
-  textAlign: 'center'
-}}>
-  <h1>Loading.....</h1>
-</div>
-
-      )
+    return (
+      <div style={{
+        position: 'fixed',
+        top: '50%',
+        left: '50%',
+        transform: 'translate(-50%, -50%)',
+        textAlign: 'center'
+      }}>
+        <h1>Loading.....</h1>
+      </div>
+    );
   }
 };
 

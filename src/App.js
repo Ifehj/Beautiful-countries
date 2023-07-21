@@ -1,6 +1,7 @@
 import "./App.css";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Navbar from "./components/Navbar";
+import ErrorBoundary from "./components/ErrorBoundry";
 import CountryHeader from "./components/Header";
 import Countries from "./components/countries";
 import Country from "./components/country";
@@ -41,8 +42,26 @@ function App() {
         {/* Pass the region state as a prop to the Navbar and Countries components */}
         <Router>
           <Routes>
-            <Route exact path="/" element={<><Navbar region={region} onRegionChange={handleRegionChange}/><Countries region={region} /></>}></Route>
-            <Route path="/:name" element={<Country />} />
+            <Route
+              exact
+              path="/"
+              element={
+                <ErrorBoundary>
+                  <>
+                    <Navbar region={region} onRegionChange={handleRegionChange} />
+                    <Countries region={region} />
+                  </>
+                </ErrorBoundary>
+              }
+            />
+            <Route
+              path="/:name"
+              element={
+                <ErrorBoundary>
+                  <Country />
+                </ErrorBoundary>
+              }
+            />
           </Routes>
         </Router>
       </Container>
