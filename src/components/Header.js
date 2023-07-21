@@ -8,7 +8,7 @@ const CountryHeader = ({theme, toggleTheme}) => {
 			<div className="Home-nav">
 				<h1>Where in the world ?</h1>
 				
-			qqq	<div className="mode">
+				<div className="mode">
 					<span className="mode-icon" onClick={toggleTheme}>{theme === 'light' ? <BsMoon/> : <BsSun/>}</span>
 					<h2>Dark Mode</h2>
 				</div>

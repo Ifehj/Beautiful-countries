@@ -1,64 +1,82 @@
-import React from "react";
-import { BsSearch} from "react-icons/bs"
-import {SearchNavigation} from "./styles"
-import { useState } from "react";
-import Countries from "./countries";
+import React, { useState } from "react";
+import { BsSearch } from "react-icons/bs";
+import { SearchNavigation } from "./styles";
+import { Link } from "react-router-dom";
 
-const Navbar = () => {
-	const {countries} = Countries
-	const [filtered, setFiltered] = useState([])
-	const [searchInput, setSearchInput] = ("")
-	
-	const regions = [
-		{
-			name: "Europe",
-		},
-		{
-			name: "Asia",
-		},
-		{
-			name: "Africa",
-		},
-		{
-			name: "Oceania",
-		},
-		{
-			name: "Americas",
-		},
-		{
-			name: "Antarctica",
-		},
-	]
 
-	const searchCountries = (searchValue) => {
-		setSearchInput(searchValue)
+const Navbar = ({ region, onRegionChange }) => {
+  const [searchInput, setSearchInput] = useState("");
 
-		if(searchInput) {
-			const filteredCountries = countries.filter((country) => (
-				Object.values(country).join("").toLowerCase().includes(searchValue.toLowerCase())
-			))
-			setFiltered(filteredCountries)
-		}else {
-			setFiltered(countries)
-		}
-	}
+  const handleRegionChange = (event) => {
+    const selectedRegion = event.target.value;
+    onRegionChange(selectedRegion);
+  };
 
-	return( 
-		<SearchNavigation>
-		<div className="search-container">
-			<form  className="search-country">
-				<span><BsSearch/></span>
-				<input placeholder="search for a country" name="search" id = "search" value={searchInput} onChange={(e) => searchCountries(e.target.value)} />
-			</form>
+  const handleInputChange = (e) => {
+    setSearchInput(e.target.value);
+  };
 
-			<select name = "select" id = "select" className="select">
-				{ regions.map((region, index) => (
-					<option key={index} value={region.name}>{region.name}</option>
-				))}
-			</select>
-		</div>
-		</SearchNavigation>
-	)
-}
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (searchInput) {
+      // Navigate to the path `/:name` with the name of the country
+      window.location.href = `/${searchInput}`;
+    }
+  };
 
-export default Navbar
+  const regions = [
+    {
+      name: "All",
+    },
+    {
+      name: "Europe",
+    },
+    {
+      name: "Asia",
+    },
+    {
+      name: "Africa",
+    },
+    {
+      name: "Oceania",
+    },
+    {
+      name: "Americas",
+    },
+  ];
+
+  return (
+    <SearchNavigation>
+      <div className="search-container">
+        <form className="search-country" onSubmit={handleSubmit}>
+          <span>
+            <BsSearch />
+          </span>
+          <input
+            placeholder="search for a country"
+            name="search"
+            id="search"
+            value={searchInput}
+            onChange={handleInputChange}
+          />
+        </form>
+
+        <select name="select" id="select" className="select" onChange={handleRegionChange} value={region}>
+          {regions.map((region, index) => (
+            <option key={index} value={region.name}>
+              {region.name}
+            </option>
+          ))}
+        </select>
+      </div>
+      {searchInput && (
+        <Link to={`/${searchInput}`} style={{ display: "none" }}>
+          {/* This Link is hidden and will be triggered when the form is submitted */}
+          Search
+        </Link>
+      )}
+    </SearchNavigation>
+  );
+};
+
+export default Navbar;
